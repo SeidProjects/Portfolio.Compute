@@ -1,6 +1,8 @@
+
 # Build files #
 ######################
 __pycache__
+*.pyc
 
 # OS generated files #
 ######################

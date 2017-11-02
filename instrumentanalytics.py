@@ -24,8 +24,8 @@ if 'VCAP_SERVICES' in os.environ:
     # Log the fact that we successfully found some service information.
     print("Got vcap_servicesData\n")
     # Look for the Simulated Instrument Analytics service instance
-    access_token=vcap_servicesData['fss-scenario-analytics-service'][0]['credentials']['accessToken']
-    uri=vcap_servicesData['fss-scenario-analytics-service'][0]['credentials']['uri']
+    access_token=vcap_servicesData['fss-instrument-analytics-service'][0]['credentials']['accessToken']
+    uri=vcap_servicesData['fss-instrument-analytics-service'][0]['credentials']['uri']
     # Log the fact that we successfully found credentials
     print("Got IA credentials\n")
 else:
@@ -57,7 +57,6 @@ def Compute_InstrumentAnalytics(instrument_ids, analytics=None):
         'Content-Type':'application/x-www-form-urlencoded',
         'X-IBM-Access-Token': access_token
         }
-
     get_data = requests.post(BASEURL, headers=headers, data=payload)
     print("Instrument Analytics status: " + str(get_data.status_code))
 

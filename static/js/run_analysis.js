@@ -1,8 +1,12 @@
 var apiUrl = location.protocol + '//' + location.host + location.pathname + "api/";
+var AjaxResponse = {};
 $('#show_analytics').click(function() {
     $("#analytics").toggle();
   });
 
+$('#downloadtoCSV').click(function() {
+    JSONToCSV(AjaxResponse,true);
+  });
 //Populate Analytics Selector
 $("#analytics").hide();
 
@@ -66,7 +70,7 @@ $('.run-analysis.Button').click(function(){
         data: input_parameters,
         dataType: 'json',
         contentType: 'application/json',
-        success: function(data) {
+        success: function(data,input_parameters) {
             console.log(data);
             if ($("input[name='download_or_here']:checked").val() == "download"){
                 JSONToCSV(data,true)
@@ -76,7 +80,8 @@ $('.run-analysis.Button').click(function(){
                 $('.sandboxtwo').removeClass('loading');
                 $('.sandboxtwo').addClass('analysis');
                 $('.loader').removeClass('active');
-                Process(data, function(){}); //Execute Process Function to update the UI with results.
+                AjaxResponse = data;
+                Process(data,function(){}); //Execute Process Function to update the UI with results.
             }
         }
     });
@@ -97,49 +102,37 @@ function Process(data) {
         mm='0'+mm
     }
     today = mm+'/'+dd+'/'+yyyy;
-    console.log(today);
     $('.date a').text(today);
 
     //update header
     var holdings_title = 'Portfolio analytics results:';
     $('.title1 h3').text(holdings_title);
-    console.log(data)
+    th = '<tr style="width: 100%"><th>Name</th><th>ID</th><th>Quantity</th>'
+    for (var key in data[0]){
+        if(['name','quantity','id','portfolio','date'].includes(key) == false){
+            th += "<th>" + AnalyticName(key) + "</th>";
+        }
+    }
+    th += "</tr>"
+    $('.port-table thead').html(th);
 
     //display holdings data
     var holdingsDataLength = data.length;
-    console.log("Number of objects: " + holdingsDataLength);
-    return
     var tr = "";
-
     for (var i = 0; i < holdingsDataLength; i++) {
-        var Name = data[i].id;
-        var Company = data[i].CompanyName;
-        var Quantity = holdings_data[i].Quantity;
-
+        var name = data[i].name;
+        var identifier = data[i].id;
+        var quantity = data[i].quantity;
         //create row in table
-        tr += "<tr tabindex='0' aria-label=" + Name + "><td>" + Name + "</td><td>" + Company + "</td><td>" + Quantiy + "</td><td>" + BaseVal + " " + BaseVal_Array[1] + "</td><td>" + NewVal + " " + NewVal_Array[1] + "</td>" + ChangeStr + "</tr>";
+        tr += "<tr tabindex='0' aria-label=" + name + "><td>" + name + "</td><td>" + identifier + "</td><td>" + quantity + "</td>";
+        for (var key in data[i]){
+            if(['name','quantity','id','portfolio','date'].includes(key) == false){
+                tr += "<td>" + data[i][key] + "</td>";
+            }
+        }
+        tr += "</tr>"
     }
     $('.port-table tbody').html(tr);
-
-    //round and calulate total P&L
-    totalPL = (((SumStressed - SumCurrent) / SumCurrent) * 100).toFixed(2);
-    SumCurrent = SumCurrent.toFixed(2);
-    SumStressed = SumStressed.toFixed(2);
-
-    //display total P&L in values with red or green color
-    var totalPLStr = '';
-    if (totalPL < 0) {
-        totalPLStr = '<td class="red"><strong>' + totalPL + '%</strong></td>';
-    } else if (totalPL > 0) {
-        totalPLStr = '<td class="green"><strong>' + totalPL + '%</strong></td>';
-    } else if (totalPL == 0) {
-        totalPLStr = '<td class=""><strong>' + totalPL + '%</strong></td>';
-    }
-
-    //display table footer
-    var tf = "";
-    tf += "<tr tabindex='0' aria-label=Portfolio Table><td><strong>Portfolio Total</strong></td><td></td><td></td><td>" + SumCurrent  +  " " + BaseVal_Array[1] +"</td><td align='left'>" + SumStressed + " " + NewVal_Array[1] + "</td>" + totalPLStr +"</tr>";
-    $('.port-table tfoot').html(tf);
 }
 
 //sort the objects on key
@@ -149,7 +142,59 @@ function sortByKey(array, key) {
         return ((x > y) ? -1 : ((x < y) ? 1 : 0));
     });
 }
-
+function AnalyticName(analytic){
+    var text = "";
+    switch (analytic) {
+        case "THEO/Price":
+            text = "Price (Clean Price)";
+            break
+        case "THEO/Value":
+            text = "Value (Dirty Price)";
+            break
+        case "THEO/Exposure":
+            text = "Exposure";
+            break
+        case "THEO/Accrued Interest":
+            text = "Accrued Interest";
+            break
+        case "THEO/Yield":
+            text = "Yield";
+            break   
+        case "THEO/Macaulay Duration":
+            text = "Macaulay Duration";
+            break             
+        case "THEO/Adjusted Duration":
+            text = "Adjusted Duration";
+            break
+        case "THEO/Effective Duration":
+            text = "Effective Duration";
+            break
+        case "THEO/Adjusted Duration2":
+            text = "Spread Duration";
+            break
+        case "THEO/Effective Convexity":
+            text = "Effective Convexity";
+            break
+        case "THEO/Delta":
+            text = "Delta";
+            break
+        case "THEO/Gamma":
+            text = "Gamma";
+            break
+        case "THEO/Domestic Rho":
+            text = "Domestic Rho";
+            break
+        case "THEO/Theta":
+            text = "Theta";
+            break
+        case "THEO/Vega":
+            text = "Vega";
+            break                             
+        default: 
+            text = analytic;
+    }
+    return text;
+}
 //source: http://jsfiddle.net/hybrid13i/JXrwM/
 function JSONToCSV(JSONData, ShowLabel) {
     //If JSONData is not an object then JSON.parse will parse the JSON string in an Object

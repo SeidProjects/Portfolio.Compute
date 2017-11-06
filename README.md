@@ -158,7 +158,7 @@ cf logs <application-name> --recent
 
 ```bash
 python InvestmentPortfolio.py
-python PortfolioOptimization.py
+python InstrumentAnalytics.py
 ```
 
 # License

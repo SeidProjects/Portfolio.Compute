@@ -5,7 +5,7 @@
 
 This journey leverages two services:
 - The **Investment Portfolio service** is used to manage and store portfolios and financial security information such as the set of eligible investments, benchmarks, and user portfolios.
-- The **Simulated Instruments Analytics service** is used to compute analytics on securities. This service is pre-integrated with market data and leverages a wide set of financial models. These financial models are _cashflow generation models_, meaning they project all cash flow a given security is going to make over its lifespan in order to calculate properties of financial securities such as current value (using present value of the cash flows) or sensitivities (to see how much cashflows change when incremental changes are made to various model inputs).
+- The **Instruments Analytics service** is used to compute analytics on securities. This service is pre-integrated with market data and leverages a wide set of financial models. These financial models are _cashflow generation models_, meaning they project all cash flow a given security is going to make over its lifespan in order to calculate properties of financial securities such as current value (using present value of the cash flows) or sensitivities (to see how much cashflows change when incremental changes are made to various model inputs).
 
 When the reader has completed this journey, they will understand how to:
 

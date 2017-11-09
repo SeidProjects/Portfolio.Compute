@@ -8,7 +8,6 @@ function updateText() {
     var portfolioLists;
     $.get(apiUrl + 'unit_test_portfolios', function(data) {
         $('.enter-portfolio select').html(function() {
-            console.log(data);
             if(data == "No portfolios found."){
                 return "Please load a portfolio below.";
             }else{
